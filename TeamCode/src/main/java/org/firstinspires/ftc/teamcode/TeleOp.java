@@ -53,7 +53,6 @@ public class TeleOp extends LinearOpMode {
         boolean ReadyToTransfer =false;
         boolean ready= false;
         boolean stacking=false;
-        boolean bagal=false;
         State searchingCone = State.INIT;
         ElapsedTime transferTime = new ElapsedTime();
         ElapsedTime timer = new ElapsedTime();
@@ -173,14 +172,10 @@ public class TeleOp extends LinearOpMode {
             if(transferTime.milliseconds()>100 && ReadyToTransfer){ //cone drop
                 vertical.outTakeClaw.setPosition(vertical.closedClaw);
                 ReadyToTransfer=false;
-                bagal=true;
             }
 
-            if(gamepad2.dpad_left && bagal){
-                vertical.outTakeLeft.setPosition(0);
-                vertical.outTakeRight.setPosition(1.02);
+            if(gamepad2.dpad_left){
                 vertical.outTakeClaw.setPosition(0.4);
-                bagal=false;
             }
 
             if(gamepad1.a){
@@ -208,7 +203,7 @@ public class TeleOp extends LinearOpMode {
             }
 
             if(gamepad2.b){
-                targetPosition = 490;
+                targetPosition = 520;
                 vertical.OutTakeUp();
             }
 
@@ -217,7 +212,7 @@ public class TeleOp extends LinearOpMode {
             }
 
             if(gamepad2.y){
-                targetPosition = 1350;
+                targetPosition = 1390;
                 vertical.OutTakeUp();
             }
 
