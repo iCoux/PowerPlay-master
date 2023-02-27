@@ -53,6 +53,8 @@ public class TeleOp extends LinearOpMode {
         boolean ReadyToTransfer =false;
         boolean ready= false;
         boolean stacking=false;
+        boolean bagal=false;
+        boolean vibration=false;
         State searchingCone = State.INIT;
         ElapsedTime transferTime = new ElapsedTime();
         ElapsedTime timer = new ElapsedTime();
@@ -154,6 +156,7 @@ public class TeleOp extends LinearOpMode {
             if (gamepad2.dpad_right  && searchingCone==State.TRUE){ //
                 intake.intakeClaw.setPosition(intake.closed);
                 searchingCone = State.FALSE;
+                vibration=true;
                 timer.reset();
             }
 
@@ -165,6 +168,7 @@ public class TeleOp extends LinearOpMode {
             if(gamepad2.left_bumper && ready){ //starting transfer
                 intake.intakeClaw.setPosition(intake.opened);
                 transferTime.reset();
+                vibration=false;
                 ready=false;
                 ReadyToTransfer=true;
             }
@@ -172,10 +176,18 @@ public class TeleOp extends LinearOpMode {
             if(transferTime.milliseconds()>100 && ReadyToTransfer){ //cone drop
                 vertical.outTakeClaw.setPosition(vertical.closedClaw);
                 ReadyToTransfer=false;
+                bagal=true;
             }
 
-            if(gamepad2.dpad_left){
+
+            if(vibration){
+                gamepad1.rumble(500);
+            }
+            if(gamepad2.dpad_left && bagal){
+                vertical.outTakeLeft.setPosition(0.05);
+                vertical.outTakeRight.setPosition(1.02-0.05);
                 vertical.outTakeClaw.setPosition(0.4);
+                bagal=false;
             }
 
             if(gamepad1.a){
