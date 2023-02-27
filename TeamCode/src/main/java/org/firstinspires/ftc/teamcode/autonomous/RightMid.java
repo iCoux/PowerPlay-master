@@ -25,7 +25,7 @@ import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 
-@Autonomous(name ="RIGHTMid", group = "Test")
+@Autonomous(name ="RightMid", group = "Test")
 public class RightMid extends LinearOpMode {
 
     SampleMecanumDrive drive;
@@ -46,6 +46,8 @@ public class RightMid extends LinearOpMode {
     Trajectory traj11, traj12;
     Trajectory parcare;
     OpenCvCamera camera;
+
+    Trajectory parcare1st;
 
 
 
@@ -114,26 +116,26 @@ public class RightMid extends LinearOpMode {
     public void stacking(double x , double y){
 
         preloadMid = drive.trajectoryBuilder(startPose)
-                .lineToSplineHeading(new Pose2d(35.3,-30, Math.toRadians(150)))
+                .lineToSplineHeading(new Pose2d(35.3,-30, Math.toRadians(140)))
                 .addTemporalMarker(0.1, () -> {
                     teleop.vertical.Medium();
                 })
                 .addSpatialMarker(new Vector2d(35.8, -30) ,()-> {
-                    placeCone();
+                    dropCone();
                 })
                 .build();
         preloadMidExtra = drive.trajectoryBuilder(preloadMid.end())
-                .lineToSplineHeading(new Pose2d(37, -14.7, Math.toRadians(175)),SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .addTemporalMarker(0.000001, () -> {
+                .lineToSplineHeading(new Pose2d(37, -15, Math.toRadians(200)),SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .addSpatialMarker(new Vector2d(37, -15) ,()-> {
                     teleop.vertical.downLift();
                 })
                 .build();
         firstCone = drive.trajectoryBuilder(preloadMidExtra.end())
-                .lineToSplineHeading(new Pose2d(44, -14.9, Math.toRadians(175)),SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(new Pose2d(44, -15, Math.toRadians(175)),SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(0.3 ,()->{
                     teleop.vertical.downLift();
                 })
-                .addSpatialMarker(new Vector2d(44 ,-14.9),() -> {
+                .addSpatialMarker(new Vector2d(44 ,-15),() -> {
                     collectFirst();
                 })
                 .build();
@@ -150,11 +152,11 @@ public class RightMid extends LinearOpMode {
                 })
                 .build();
         traj4 = drive.trajectoryBuilder(traj3.end())
-                .lineToSplineHeading(new Pose2d(44.3, -14.9, Math.toRadians(178)),SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(new Pose2d(44.3, -15, Math.toRadians(175)),SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(0.3,()-> {
                     teleop.vertical.downLift();
                 })
-                .addSpatialMarker(new Vector2d(44.3 ,-14.9),() ->{
+                .addSpatialMarker(new Vector2d(44.3 ,-15),() ->{
                     collectSecond();
                 })
                 .build();
@@ -171,11 +173,11 @@ public class RightMid extends LinearOpMode {
                 })
                 .build();
         traj6 = drive.trajectoryBuilder(traj5.end())
-                .lineToSplineHeading(new Pose2d(43.1, -14.9, Math.toRadians(180)),SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(new Pose2d(43.1, -15, Math.toRadians(175)),SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(0.3,()-> {
                     teleop.vertical.downLift();
                 })
-                .addSpatialMarker(new Vector2d(43.1 , -14.9), () -> {
+                .addSpatialMarker(new Vector2d(43.1 , -15), () -> {
                     collectThird();
                 })
                 .build();
@@ -192,11 +194,11 @@ public class RightMid extends LinearOpMode {
                 })
                 .build();
         traj8 = drive.trajectoryBuilder(traj7.end())
-                .lineToSplineHeading(new Pose2d(42.1, -14.9, Math.toRadians(180)),SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(new Pose2d(42.1, -15, Math.toRadians(175)),SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(0.7, () -> {
                     teleop.vertical.downLift();
                 })
-                .addSpatialMarker(new Vector2d(42.1 ,-14.9),() -> {
+                .addSpatialMarker(new Vector2d(42.1 ,-15),() -> {
                     collectFourth();
                 })
                 .build();
@@ -214,11 +216,11 @@ public class RightMid extends LinearOpMode {
                 .build();
 
         traj10 = drive.trajectoryBuilder(traj9.end())
-                .lineToSplineHeading(new Pose2d(42.1, -14.9, Math.toRadians(180)),SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                .lineToSplineHeading(new Pose2d(42.1, -15, Math.toRadians(175)),SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH), SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .addTemporalMarker(0.7, () -> {
                     teleop.vertical.downLift();
                 })
-                .addSpatialMarker(new Vector2d(42.1 ,-14.9),() -> {
+                .addSpatialMarker(new Vector2d(42.1 ,-15),() -> {
                     collectFifth();
                 })
                 .build();
@@ -235,10 +237,16 @@ public class RightMid extends LinearOpMode {
                 })
                 .build();
         traj12 = drive.trajectoryBuilder(traj11.end())
-                .lineToSplineHeading(new Pose2d(41.8, -14.7, Math.toRadians(178)))
+                .lineToSplineHeading(new Pose2d(41.8, -14.7, Math.toRadians(175)))
                 .build();
-        parcare = drive.trajectoryBuilder(traj12.end())
-                .lineToSplineHeading(new Pose2d(x, y, Math.toRadians(178)))
+        parcare1st = drive.trajectoryBuilder(traj12.end())
+                .lineToSplineHeading(new Pose2d(38,-14 , Math.toRadians(200)))
+                .addTemporalMarker(0.1, () -> {
+                    parkingRetract();
+                })
+                .build();
+        parcare = drive.trajectoryBuilder(parcare1st.end())
+                .lineToSplineHeading(new Pose2d(x, y, Math.toRadians(180)))
                 .addTemporalMarker(0.1, () -> {
                     parkingRetract();
                 })
@@ -314,6 +322,9 @@ public class RightMid extends LinearOpMode {
         drive.update();
     }
 
+    public void dropCone(){
+        teleop.vertical.outTakeClaw.setPosition(0.4);
+    }
     public void retract(){
         teleop.intake.intakeLeft.setPosition(0.988-teleop.intake.retracted);
         teleop.intake.intakeRight.setPosition(teleop.intake.retracted);
