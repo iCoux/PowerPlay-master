@@ -1,0 +1,11 @@
+
+
+collect arm 0.075  uad 0.1
+
+collect fifth 0.41 arm 0.21 uad
+
+collect fourth 0.33 arm 0.18 uad
+
+collect third 0.24 arm 0.15 uad
+
+collect second 0.15 arm 0.13 uad

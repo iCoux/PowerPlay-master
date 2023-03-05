@@ -15,9 +15,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Horizontal;
 import org.firstinspires.ftc.teamcode.subsystems.Lift;
 
 @Config
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOP😘", group = "TEST")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "TeleOPAutonom", group = "TEST")
 
-public class TeleOp extends LinearOpMode {
+public class TeleOPAutonom extends LinearOpMode {
 
 
     ElapsedTime timer = new ElapsedTime();
@@ -46,6 +46,29 @@ public class TeleOp extends LinearOpMode {
         FALSE
     }
 
+    enum Stacking {
+        ON,
+
+        InProgress,
+        OFF,
+
+        ReadyForNext
+    }
+
+    enum StackingState {
+        Retracted,
+        ArmDown,
+       IntakeClosed,
+       TransferReady,
+        IntakeOpenedForTransfer,
+       OutTakeClosed,
+        LiftUp,
+        OutTakeOpened,
+        LiftDown,
+    }
+
+
+
 
     public void runOpMode() throws InterruptedException {
 
@@ -56,9 +79,11 @@ public class TeleOp extends LinearOpMode {
         boolean bagal=false;
         boolean cone=false;
         State searchingCone = State.FALSE;
+        Stacking stackingAUTO = Stacking.OFF;
+        StackingState stateofStacking = StackingState.Retracted;
         ElapsedTime transferTime = new ElapsedTime();
         ElapsedTime timer = new ElapsedTime();
-        ElapsedTime scoreCone = new ElapsedTime();
+        ElapsedTime stackingAutonomTimer = new ElapsedTime();
 
         drive.initDrivetrain(hardwareMap);
         vertical.initLiftTeleOp(hardwareMap);
@@ -116,9 +141,10 @@ public class TeleOp extends LinearOpMode {
 
             if (gamepad1.dpad_right){
 
-                intake.ArmRight.setPosition(0.41);
-                intake.ArmLeft.setPosition(0.41);
-                intake.UpAndDown.setPosition(0.215);
+                intake.intakeLeft.setPosition(0.1);
+                intake.intakeRight.setPosition(0.9);
+                intake.ArmRight.setPosition(0.695);
+                intake.UpAndDown.setPosition(0.6);
                 intake.intakeClaw.setPosition(intake.opened);
                 searchingCone=State.TRUE;
 
@@ -126,43 +152,43 @@ public class TeleOp extends LinearOpMode {
 
             if (gamepad1.dpad_up){
 
-                intake.ArmRight.setPosition(0.33);
-                intake.ArmLeft.setPosition(0.33);
-                intake.UpAndDown.setPosition(0.19);
+                intake.intakeLeft.setPosition(0.15);
+                intake.intakeRight.setPosition(0.85);
+                intake.ArmRight.setPosition(0.7);
+                intake.UpAndDown.setPosition(0.61);
                 intake.intakeClaw.setPosition(intake.opened);
                 searchingCone=State.TRUE;
 
             }
             if (gamepad1.dpad_left){
 
-
-                intake.ArmLeft.setPosition(0.24);
-                intake.ArmRight.setPosition(0.24);
-                intake.UpAndDown.setPosition(0.15);
+                intake.intakeLeft.setPosition(0.088);
+                intake.intakeRight.setPosition(0.9);
+                intake.ArmRight.setPosition(0.78);
+                intake.UpAndDown.setPosition(0.53);
                 intake.intakeClaw.setPosition(intake.opened);
                 searchingCone=State.TRUE;
             }
 
             if (gamepad1.dpad_down){
-
-                intake.ArmLeft.setPosition(0.15);
-                intake.ArmRight.setPosition(0.15);
-                intake.UpAndDown.setPosition(0.13);
+                intake.intakeLeft.setPosition(0.088);
+                intake.intakeRight.setPosition(0.9);
+                intake.ArmRight.setPosition(0.85);
+                intake.UpAndDown.setPosition(0.5);
                 intake.intakeClaw.setPosition(intake.opened);
                 searchingCone=State.TRUE;
             }
 
 
             if(gamepad2.dpad_right && searchingCone==State.TRUE){
-                intake.intakeClaw.setPosition(0.3);
+                intake.intakeClaw.setPosition(0.2);
                 searchingCone=State.FALSE;
                 timer.reset();
                 ready=true;
             }
 
-
             if(timer.milliseconds()>150 && searchingCone==State.FALSE && ready){
-                intake.intakeRetract();
+                intake.ArmUpAll();
 
             }
 
@@ -173,35 +199,30 @@ public class TeleOp extends LinearOpMode {
                 ReadyToTransfer=true;
             }
 
-            if(transferTime.milliseconds()>250 && ReadyToTransfer){ //cone drop
+            if(transferTime.milliseconds()>150 && ReadyToTransfer){ //cone drop
                 vertical.outTakeClaw.setPosition(vertical.closedClaw);
                 ReadyToTransfer=false;
                 bagal=true;
             }
 
+
             if(gamepad2.dpad_left && bagal){
-                vertical.outTakeRight.setPosition(0.8);
-                vertical.outTakeLeft.setPosition(0.8);
-                vertical.outTakeClaw.setPosition(0.9);
+                vertical.outTakeClaw.setPosition(0.4);
                 bagal=false;
             }
 
-            if(gamepad1.y){
-                intake.ArmRight.setPosition(0.08);
-                intake.ArmLeft.setPosition(0.08);
-                intake.intakeClaw.setPosition(intake.closed);
-                searchingCone=State.TRUE;
-            }
             if(gamepad1.a){
-                intake.ArmRight.setPosition(0.075);
-                intake.ArmLeft.setPosition(0.075);
-                intake.UpAndDown.setPosition(0.1);
-
+                intake.ArmRight.setPosition(0.92);
+                intake.intakeClaw.setPosition(intake.closed);
                 searchingCone=State.TRUE;
             }
             if(gamepad1.b){
                 intake.intakeClaw.setPosition(intake.opened);
                 searchingCone =State.TRUE;
+            }
+            if(gamepad1.x){
+                intake.intakeClaw.setPosition(intake.closed);
+
             }
 
             if(gamepad2.x){
@@ -211,26 +232,20 @@ public class TeleOp extends LinearOpMode {
 
             if(gamepad2.a){
                 targetPosition = 0;
-                scoreCone.reset();
-                cone=false;
-            }
-
-            if(scoreCone.milliseconds()>150 && !cone){
-                vertical.OutTakeDownTELEOP();
-                cone=true;
+                vertical.OutTakeDown();
             }
 
             if(gamepad2.b){
-                targetPosition = 210;
+                targetPosition = 180;
                 vertical.OutTakeUp();
             }
 
             if(gamepad1.touchpad){
-                targetPosition=targetPosition+10;
+                targetPosition=targetPosition+20;
             }
 
             if(gamepad2.y){
-                targetPosition = 540;
+                targetPosition = 500;
                 vertical.OutTakeUp();
             }
 
@@ -240,12 +255,69 @@ public class TeleOp extends LinearOpMode {
                 intake.intakeClaw.setPosition(intake.opened);
             }
 
-            if(gamepad2.touchpad && searchingCone==State.FALSE){
-                searchingCone=State.TRUE;
-                intake.ArmLeft.setPosition(0.5);
-                intake.ArmRight.setPosition(0.5);
-                intake.UpAndDown.setPosition(0.2);
+
+            if(gamepad2.dpad_up){
+                stackingAUTO=Stacking.ON;
             }
+
+            if(stackingAUTO==Stacking.ON || stackingAUTO==Stacking.ReadyForNext){
+                intake.ArmDownAll();
+                stackingAUTO=Stacking.InProgress;
+                stackingAutonomTimer.reset();
+                stateofStacking=StackingState.ArmDown;
+            }
+
+            if(stackingAutonomTimer.milliseconds()>150 && stateofStacking==StackingState.ArmDown){
+                intake.intakeClaw.setPosition(0.3);
+                stateofStacking=StackingState.IntakeClosed;
+            }
+
+            if(stackingAutonomTimer.milliseconds()>350 && stateofStacking==StackingState.IntakeClosed){
+               intake.ArmUpAll();
+                stateofStacking=StackingState.TransferReady;
+            }
+
+
+            if(stackingAutonomTimer.milliseconds()>600 && stateofStacking==StackingState.TransferReady){
+                intake.intakeClaw.setPosition(0);
+                stateofStacking=StackingState.IntakeOpenedForTransfer;
+            }
+
+            if(stackingAutonomTimer.milliseconds()>900 && stateofStacking==StackingState.IntakeOpenedForTransfer){
+                vertical.outTakeClaw.setPosition(0.75);
+                stateofStacking=StackingState.OutTakeClosed;
+            }
+
+            if(stackingAutonomTimer.milliseconds()>1300 && stateofStacking==StackingState.OutTakeClosed){
+                targetPosition=500;
+                stateofStacking=StackingState.LiftUp;
+            }
+
+            if(stackingAutonomTimer.milliseconds()>1800 && stateofStacking==StackingState.LiftUp){
+                vertical.outTakeClaw.setPosition(0.4);
+                stateofStacking=StackingState.OutTakeOpened;
+            }
+
+            if(stackingAutonomTimer.milliseconds()>2300 && stateofStacking==StackingState.OutTakeOpened){
+                targetPosition=0;
+                vertical.OutTakeDown();
+                stateofStacking=StackingState.LiftDown;
+                stackingAUTO=Stacking.ReadyForNext;
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             packet.put("positionRight", vertical.liftRight.getCurrentPosition());
             packet.put("positionLeft", vertical.liftLeft.getCurrentPosition());

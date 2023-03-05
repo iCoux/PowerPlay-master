@@ -10,30 +10,17 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class Lift{
-
     public DcMotorEx liftLeft;
     public DcMotorEx liftRight;
     public Servo outTakeRight;
     public Servo outTakeLeft;
     public Servo outTakeClaw;
-    ElapsedTime timer = new ElapsedTime();
-
-    private double lastError = 0;
-    private double integralSum = 0;
-    public static double Kp = 0.01;
-    public static double Ki = 0.0;
-    public static double Kd = 0.0;
-
-    public static double targetPosition = 0;
-    public double outTakeUp = 0.15;
-    public double outTakeDown = 0.074;
-    public double closedClaw = 0.75;
-    public double openedClaw = 0.54;
-    public int medium = 480;
-    public int high = 1360;
-
-    double currentPosition=0;
-
+    public double outTakeUp = 0.6;
+    public double outTakeDown = 0.035;
+    public double closedClaw = 0.7;
+    public double openedClaw = 0.9;
+    public int medium = 215;
+    public int high = 500;
     public void initLiftAuto(HardwareMap hardwareMap){
 
         outTakeRight = hardwareMap.get(Servo.class, " outTakeRight");
@@ -48,9 +35,9 @@ public class Lift{
         liftLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        outTakeClaw.setPosition(0.8);
         outTakeClaw.setPosition(closedClaw);
-        outTakeLeft.setPosition(1.02-outTakeDown);
+        outTakeLeft.setPosition(outTakeDown);
+        outTakeRight.setPosition(outTakeDown);
         outTakeRight.setPosition(outTakeDown);
     }
 
@@ -68,28 +55,28 @@ public class Lift{
         liftRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         liftRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        outTakeClaw.setPosition(0.55); // transfer pos
-        outTakeLeft.setPosition(1.02-outTakeDown);
+        outTakeClaw.setPosition(0.);
+        outTakeLeft.setPosition(outTakeDown);
         outTakeRight.setPosition(outTakeDown);
     }
 
     public void Low(){
-        outTakeLeft.setPosition(0.03);
-        outTakeRight.setPosition(0.99);
+        outTakeLeft.setPosition(0.8);
+        outTakeRight.setPosition(0.8);
     }
 
     public void OutTakeUp(){
-        outTakeLeft.setPosition(outTakeUp);
-        outTakeRight.setPosition(1.02-outTakeUp);
+        outTakeLeft.setPosition(0.7);
+        outTakeRight.setPosition(0.7);
     }
 
     public void midPreload(){
         outTakeClaw.setPosition(closedClaw);
-        outTakeLeft.setPosition(0);
-        outTakeRight.setPosition(1.02);
+        outTakeLeft.setPosition(0.85);
+        outTakeRight.setPosition(0.85);
 
-        liftLeft.setTargetPosition(975);
-        liftRight.setTargetPosition(975);
+        liftLeft.setTargetPosition(375);
+        liftRight.setTargetPosition(375);
 
         liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -99,15 +86,21 @@ public class Lift{
     }
 
     public void OutTakeDown(){
-        outTakeClaw.setPosition(0.55);
-        outTakeLeft.setPosition(1.02-outTakeDown);
-        outTakeRight.setPosition(outTakeDown);
+        outTakeClaw.setPosition(0.8);
+        outTakeLeft.setPosition(0.03);
+        outTakeRight.setPosition(0.03);
+    }
+
+    public void OutTakeDownTELEOP(){
+        outTakeClaw.setPosition(0.8);
+        outTakeLeft.setPosition(0.017);
+        outTakeRight.setPosition(0.017);
     }
     public void downLift() {
 
-        outTakeClaw.setPosition(0.55);
-        outTakeLeft.setPosition(1.02-outTakeDown);
-        outTakeRight.setPosition(outTakeDown);
+        outTakeClaw.setPosition(0.83);
+        outTakeLeft.setPosition(0.034);
+        outTakeRight.setPosition(0.034);
 
         liftLeft.setTargetPosition(0);
         liftRight.setTargetPosition(0);
@@ -136,9 +129,8 @@ public class Lift{
     }
     public void High() {
 
-        outTakeClaw.setPosition(0.75);
-        outTakeLeft.setPosition(outTakeUp);
-        outTakeRight.setPosition(1.02-outTakeUp);
+        outTakeClaw.setPosition(0.7);
+        OutTakeUp();
 
         liftLeft.setTargetPosition(high);
         liftRight.setTargetPosition(high);
@@ -150,26 +142,5 @@ public class Lift{
         liftRight.setPower(1);
 
     }
-    public void liftDown(){
-        liftLeft.setTargetPosition(900);
-        liftRight.setTargetPosition(900);
 
-        liftLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        liftRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        liftLeft.setPower(1);
-        liftRight.setPower(1);
-    }
-
-    public double update(double reference, double state){
-        double error = reference - state;
-        integralSum += error * timer.seconds();
-        double derivative = (error- lastError) / timer.seconds();
-        lastError = error;
-
-        timer.reset();
-
-        double output = (error * Kp) + (derivative * Kd) + (integralSum * Ki);
-        return  output;
-    }
 }

@@ -8,19 +8,16 @@ public class Horizontal {
     public Servo intakeRight;
     public double extended = 0.9;
     public double retracted =0.54;
-    public Servo ArmLeft; // 0.97 down
-    public Servo ArmRight; //0.03 down
+    public Servo ArmLeft;
+    public Servo ArmRight;
     public Servo UpAndDown;
-    public double ArmUpR = 0.60;
-
-    public double ArmDownR = 0.91;
-    public double down = 0.434;
-
-    public double up = 0.198;
+    public double ArmUp = 0.57;
+    public double ArmDown = 0.075;
+    public double down = 0.1;
     public Servo intakeClaw;
 
-    public double closed = 0.4;
-    public double opened = 0.2;
+    public double closed = 0.3;
+    public double opened = 0;
 
 
     public void initIntake(HardwareMap hardwareMap){
@@ -28,55 +25,45 @@ public class Horizontal {
         intakeLeft = hardwareMap.get(Servo.class, " intakeLeft");
         intakeRight = hardwareMap.get(Servo.class, " intakeRight");
         ArmRight = hardwareMap.get(Servo.class, " ArmRight");
+        ArmLeft = hardwareMap.get(Servo.class, " ArmLeft");
         UpAndDown = hardwareMap.get(Servo.class, " UpAndDown");
         intakeClaw = hardwareMap.get(Servo.class, " intakeClaw");
-        intakeClaw.setPosition(opened);
+        intakeClaw.setPosition(0);
         intakeRetract();
     }
     public void ArmDownAll(){
 
-        ArmRight.setPosition(ArmDownR);
-        UpAndDown.setPosition(down);
+        ArmLeft.setPosition(ArmDown);
+        ArmRight.setPosition(ArmDown);
+        UpAndDown.setPosition(0.1);
     }
-
     public void ArmUpAll(){
-        ArmRight.setPosition(ArmUpR);
+
+        ArmLeft.setPosition(ArmUp);
+        ArmRight.setPosition(ArmUp);
+        UpAndDown.setPosition(0.1);
+
     }
     public void intakeExtend(){
 
         intakeLeft.setPosition(0.988-extended);
         intakeRight.setPosition(extended);
 
-        ArmRight.setPosition(ArmDownR);
+        ArmRight.setPosition(ArmDown);
+        ArmLeft.setPosition(ArmDown);
 
-        UpAndDown.setPosition(down);
-        intakeClaw.setPosition(opened);
+        UpAndDown.setPosition(0.1);
+        intakeClaw.setPosition(0);
 
-    }
-
-    public void GroundTerminal(){
-
-        ArmLeft.setPosition(0.09);
-        ArmRight.setPosition(0.91);
     }
     public void intakeRetract(){
 
         intakeLeft.setPosition(0.988-retracted);
         intakeRight.setPosition(retracted);
 
-        ArmRight.setPosition(ArmUpR);
+        ArmLeft.setPosition(0.58);
+        ArmRight.setPosition(0.58);
 
-        UpAndDown.setPosition(0.37);
-    }
-
-    public void terminal(){
-
-        intakeLeft.setPosition(extended);
-        intakeRight.setPosition(extended);
-
-        intakeClaw.setPosition(opened);
-
-        ArmRight.setPosition(ArmDownR);
-        UpAndDown.setPosition(down);
+        UpAndDown.setPosition(0);
     }
 }
